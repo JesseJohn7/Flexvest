@@ -1,7 +1,8 @@
 import Navbar from "@/components/Navbar"; 
 import Hero from "@/components/Hero";
-/* 
 import Features from "@/components/Features";
+/* 
+
 import HowItWorks from "@/components/HowItWorks";
 import Testimonials from "@/components/Testimonial";
 import FAQ from "@/components/Faqs";
@@ -12,8 +13,9 @@ export default function HomePage() {
     <>
       <Navbar/>
        <Hero /> 
+       <Features />
       {/*
-      <Features />
+      
       <HowItWorks/>
       <Testimonials/>
       <FAQ/>
