@@ -2,10 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useClerk, useUser, UserButton } from "@clerk/nextjs";
 
 const Navbar: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { openSignIn } = useClerk();
+  const { isSignedIn } = useUser();
 
   // Scroll effect: add shadow/blur when scrolling
   useEffect(() => {
@@ -14,9 +17,27 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Placeholder for join button (you can connect to a modal later)
+  // Open Clerk modal (Sign In + Sign Up)
   const handleJoinClick = () => {
-    alert("Join Waitlist clicked!");
+    openSignIn({
+      // Clerk automatically allows switching to Sign Up in the modal
+      redirectUrl: "/", // where to go after signing in/up
+      appearance: {
+        elements: {
+          card: "rounded-2xl shadow-lg border border-gray-100",
+          headerTitle: "text-green-600 font-bold text-xl",
+          footerActionLink:
+            "text-green-600 font-semibold hover:underline hover:text-green-700 transition",
+          formButtonPrimary:
+            "bg-green-600 hover:bg-green-700 text-white font-semibold",
+          socialButtonsBlockButton:
+            "bg-green-600 hover:bg-green-700 text-white font-semibold",
+        },
+        variables: {
+          colorPrimary: "#16a34a",
+        },
+      },
+    });
   };
 
   return (
@@ -42,12 +63,19 @@ const Navbar: React.FC = () => {
 
         {/* Right Side */}
         <div className="hidden md:flex items-center">
-          <button
-            onClick={handleJoinClick}
-            className="bg-green-600 text-white font-semibold px-6 py-2 rounded-full hover:bg-green-700 transition"
-          >
-            Join Waitlist
-          </button>
+          {isSignedIn ? (
+            <UserButton
+              afterSignOutUrl="/"
+              appearance={{ elements: { userButtonAvatarBox: "ring-2 ring-green-600" } }}
+            />
+          ) : (
+            <button
+              onClick={handleJoinClick}
+              className="bg-green-600 text-white font-semibold px-6 py-2 rounded-full hover:bg-green-700 transition"
+            >
+              Join Waitlist
+            </button>
+          )}
         </div>
 
         {/* Mobile Hamburger */}
@@ -80,15 +108,22 @@ const Navbar: React.FC = () => {
         <Link href="#testimonials" className="hover:text-green-600 transition">Testimonials</Link>
         <Link href="#faqs" className="hover:text-green-600 transition">FAQs</Link>
 
-        <button
-          onClick={() => {
-            setMenuOpen(false);
-            handleJoinClick();
-          }}
-          className="bg-green-600 text-white font-semibold px-6 py-2 rounded-full mb-4 hover:bg-green-700 transition"
-        >
-          Join Waitlist
-        </button>
+        {isSignedIn ? (
+          <UserButton
+            afterSignOutUrl="/"
+            appearance={{ elements: { userButtonAvatarBox: "ring-2 ring-green-600" } }}
+          />
+        ) : (
+          <button
+            onClick={() => {
+              setMenuOpen(false);
+              handleJoinClick();
+            }}
+            className="bg-green-600 text-white font-semibold px-6 py-2 rounded-full mb-4 hover:bg-green-700 transition"
+          >
+            Join Waitlist
+          </button>
+        )}
       </div>
     </nav>
   );
